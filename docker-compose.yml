@@ -14,7 +14,7 @@ services:
       - pg_data:/var/lib/postgresql/data
       - ./backend/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gateway_user"]
+      test: ["CMD-SHELL", "pg_isready -U gateway_user -d payment_gateway"]
       interval: 10s
       timeout: 5s
       retries: 5
