@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout</title>
+</head>
+<body>
+  <h3>Complete Payment</h3>
+  <button id="payBtn">Pay Now</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const order_id = params.get("order_id");
+    const amount = params.get("amount");
+
+    document.getElementById("payBtn").onclick = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:8000/api/v1/payments",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              order_id,
+              method: "upi",
+              vpa: "user@paytm",
+              amount: Number(amount),
+            }),
+          }
+        );
+
+        const data = await res.json();
+
+        // Simulate async success (worker will update)
+        setTimeout(() => {
+          window.parent.postMessage(
+            {
+              type: "PAYMENT_SUCCESS",
+              payload: data,
+            },
+            "*"
+          );
+        }, 2000);
+
+      } catch (err) {
+        window.parent.postMessage(
+          {
+            type: "PAYMENT_FAILED",
+            payload: { error: err.message },
+          },
+          "*"
+        );
+      }
+    };
+  </script>
+</body>
+</html>
